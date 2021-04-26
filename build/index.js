@@ -14,14 +14,14 @@ var Product = /** @class */ (function () {
         this.HasDiscount = false;
         this.DiscountPercent = 0;
     }
-    Product.prototype.AddLikeability = function () { this.Likeability++; };
-    Product.prototype.GetLikeability = function () { return this.Likeability; };
+    Product.prototype.addLikeability = function () { this.Likeability++; };
+    Product.prototype.getLikeability = function () { return this.Likeability; };
     ;
-    Product.prototype.AddDiscount = function (newDiscount) {
+    Product.prototype.addDiscount = function (newDiscount) {
         this.HasDiscount = true;
         this.DiscountPercent = newDiscount;
     };
-    Product.prototype.GetPrice = function () {
+    Product.prototype.getPrice = function () {
         if (!this.HasDiscount)
             return this.Price;
         return this.Price * (100 - this.DiscountPercent) / 100;
@@ -44,11 +44,11 @@ var Customer = /** @class */ (function () {
         this.Money = money;
         this.ProductManager = productManager;
     }
-    Customer.prototype.BuyProduct = function (product, quantity) {
-        this.ProductManager.SellProduct(product, this, quantity);
+    Customer.prototype.buyProduct = function (product, quantity) {
+        this.ProductManager.sellProduct(product, this, quantity);
     };
-    Customer.prototype.AddFavorites = function (product) {
-        this.ProductManager.AddFavorites(product, this);
+    Customer.prototype.addFavorites = function (product) {
+        this.ProductManager.addFavorites(product, this);
     };
     return Customer;
 }());
@@ -62,13 +62,13 @@ var ProductManager = /** @class */ (function () {
             this.ProductList.push(product);
         }
     }
-    ProductManager.prototype.SellProduct = function (product, customer, quantity) {
+    ProductManager.prototype.sellProduct = function (product, customer, quantity) {
         var foundProduct = this.ProductList.find(function (p) { return p == product; });
         if (!foundProduct) {
             console.log("This products doesn't exist");
             return;
         }
-        if (customer.Money * quantity <= product.GetPrice()) {
+        if (customer.Money * quantity <= product.getPrice()) {
             console.log("you broke");
             return;
         }
@@ -80,23 +80,23 @@ var ProductManager = /** @class */ (function () {
         for (var i = 1; i <= quantity; i++) {
             customer.BoughtProducts.push(product);
         }
-        customer.Money -= product.GetPrice() * quantity;
+        customer.Money -= product.getPrice() * quantity;
         var newOrder = new Order(customer, product, new Date(), quantity);
         this.OrderList.push(newOrder);
     };
-    ProductManager.prototype.AddFavorites = function (product, customer) {
+    ProductManager.prototype.addFavorites = function (product, customer) {
         var foundProduct = this.ProductList.find(function (p) { return p.Id == product.Id; });
         if (!foundProduct) {
             console.log("This products doesn't exist");
             return;
         }
         customer.Favorites.push(product);
-        product.AddLikeability();
-        if (product.GetLikeability() > 10) {
-            product.AddDiscount(10);
+        product.addLikeability();
+        if (product.getLikeability() > 10) {
+            product.addDiscount(10);
         }
     };
-    ProductManager.prototype.Refill = function (product, amound) {
+    ProductManager.prototype.refill = function (product, amound) {
         product.Stock += amound;
     };
     return ProductManager;

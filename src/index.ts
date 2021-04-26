@@ -9,13 +9,17 @@ class Product {
     HasDiscount: boolean;
     DiscountPercent: number;
 
-    AddLikeability() { this.Likeability++ }
-    GetLikeability() { return this.Likeability };
-    AddDiscount(newDiscount: number) {
+    addLikeability() 
+    { this.Likeability++ }
+
+    getLikeability() 
+    { return this.Likeability };
+    
+    addDiscount(newDiscount: number) {
         this.HasDiscount = true;
         this.DiscountPercent = newDiscount;
     }
-    GetPrice(){
+    getPrice(){
         if(!this.HasDiscount)
         return this.Price;
         
@@ -65,11 +69,12 @@ class Customer {
     }
 
 
-    BuyProduct(product: Product, quantity: number) {
-        this.ProductManager.SellProduct(product, this, quantity)
+    buyProduct(product: Product, quantity: number) {
+        this.ProductManager.sellProduct(product, this, quantity)
     }
-    AddFavorites(product: Product) {
-        this.ProductManager.AddFavorites(product,this)
+
+    addFavorites(product: Product) {
+        this.ProductManager.addFavorites(product,this)
     }
 
 }
@@ -80,18 +85,19 @@ class ProductManager {
     constructor() {
         this.ProductList = [];
         this.OrderList = [];
+
         for (let source of sources) {
             let product = new Product(source["stock"], source["name"], source["id"], source["price"]);
             this.ProductList.push(product);
         }
     }
-    public SellProduct(product: Product, customer: Customer, quantity: number) {
+    public sellProduct(product: Product, customer: Customer, quantity: number) {
         let foundProduct = this.ProductList.find(p => p == product)
         if (!foundProduct) {
             console.log("This products doesn't exist")
             return;
         }
-        if (customer.Money * quantity <= product.GetPrice()) {
+        if (customer.Money * quantity <= product.getPrice()) {
             console.log("you broke")
             return;
         }
@@ -103,25 +109,25 @@ class ProductManager {
         for (let i = 1; i <= quantity; i++) {
             customer.BoughtProducts.push(product);
         }
-        customer.Money -= product.GetPrice() * quantity;
+        customer.Money -= product.getPrice() * quantity;
         let newOrder = new Order(customer, product, new Date(), quantity)
         this.OrderList.push(newOrder)
     }
 
-    public AddFavorites(product: Product, customer: Customer) {
+    public addFavorites(product: Product, customer: Customer) {
         let foundProduct = this.ProductList.find(p => p.Id == product.Id)
         if (!foundProduct) {
             console.log("This products doesn't exist")
             return;
         }
         customer.Favorites.push(product)
-        product.AddLikeability()
-        if(product.GetLikeability()>10){
-            product.AddDiscount(10);
+        product.addLikeability()
+        if(product.getLikeability()>10){
+            product.addDiscount(10);
         }
     }
 
-    public Refill(product:Product, amound:number){
+    public refill(product:Product, amound:number){
         product.Stock+=amound;
     }
 }
